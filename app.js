@@ -8,6 +8,7 @@
         var cons         = require('consolidate');
         var app          = express();
         var db           = require("./database/db");
+        var cors         = require('cors');
         
         
         
@@ -19,6 +20,7 @@
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(cookieParser());
         app.use(express.static(path.join(__dirname, './public')));
+        app.use(cors({origin: 'http://localhost:3000'}));
         
         
         app.use('/', routes);
