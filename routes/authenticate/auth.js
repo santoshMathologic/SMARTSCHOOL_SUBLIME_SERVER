@@ -14,9 +14,8 @@ var q = require('q');
          console.log(username);
          console.log(password);
 
-            return res.json({
-            	 "username" : username,
-            	 "password" : password
+             res.json({
+            	 "successMessage":"Login successfully"
             });
   	 }
 

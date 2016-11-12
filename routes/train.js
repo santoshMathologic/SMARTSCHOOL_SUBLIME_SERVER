@@ -11,7 +11,7 @@ var train = {
          var options = {
             perPage: parseInt(req.query.limit) || 10,
             page: parseInt(req.query.page) || 1,
-            order: req.query.order || 'trainNo'
+            sortBy: req.query.sortBy || 'trainNo'
         };
         var query;
         query = trainModel.find({});
