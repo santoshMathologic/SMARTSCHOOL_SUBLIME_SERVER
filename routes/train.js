@@ -1,23 +1,23 @@
 
 var mongoose = require('mongoose');
-var userPlanModel = require('../models/userPlan.js');
+var trainModel = require('../models/trains.js');
 var q = require('q');
 require('mongoose-query-paginate');
 
-var userPlan = {
+var train = {
 
-	 getPlan:function(req,res){
+	 gettrains:function(req,res){
 
          var options = {
             perPage: parseInt(req.query.limit) || 10,
             page: parseInt(req.query.page) || 1,
-            order: req.query.order || 'planName'
+            order: req.query.order || 'trainNo'
         };
         var query;
-        query = userPlanModel.find({});
+        query = trainModel.find({});
         query.paginate(options, function (err, result) {
-            return res.json(result);
-            
+            res.json(result);
+            console.log("" + result);
         });
 
 	 }
@@ -28,4 +28,4 @@ var userPlan = {
 
 
 };
-module.exports = userPlan;
+module.exports = train;
