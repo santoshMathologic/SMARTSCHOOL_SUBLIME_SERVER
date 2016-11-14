@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
+var jwt = require('jwt-simple');
 var userModel = require('../../models/user.js');
-require('mongoose-query-paginate');
+var tokenkey= require('../../configSecret/config');
+
 var q = require('q');
 
 
@@ -22,7 +24,7 @@ var authentication = {
             return;
 
         }
-
+        // Fire a query to your DB and check if the credentials are valid
         authentication.validate(username, password).then(function(response) {
            if (response.roleCode === undefined) { // If authentication fails, we send a 401 back
                 res.status(403); // Throw generic error Message
@@ -33,7 +35,15 @@ var authentication = {
                     });
                 return;
             }else{
-              res.json("Login successfully : "+response.username +":"+ response.roleCode);
+              // If authentication is success, we will generate a token
+              // and dispatch it to the client
+
+               var token = genToken(response);
+                res.cookie('x-access-token', token.token, { expires: new Date(token.expires) });
+                res.cookie('x-key', token.user.username);
+                res.json(token);
+
+            //  res.json("Login successfully : "+response.username +":"+ response.roleCode);
             }
         });
     },
@@ -69,5 +79,28 @@ var authentication = {
 
 
 };
+/**  
+ *   JWT-SIMPLE BASED authentication 
+ *    private method
+ * 
+ */
+
+function genToken(user) {
+    var expires = expiresIn(7); // 7 days
+    var token = jwt.encode({
+        exp: expires,
+    },tokenkey.getkey()); // own implementation 
+
+    return {
+        token: token,
+        expires: expires,
+        user: user.username
+    };
+}
+
+function expiresIn(numDays) {
+    var dateObj = new Date();
+    return dateObj.setDate(dateObj.getDate() + numDays);
+}
 
 module.exports = authentication;
