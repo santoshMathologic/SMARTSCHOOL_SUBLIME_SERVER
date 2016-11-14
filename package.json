@@ -19,6 +19,7 @@
     "express-session": "^1.14.2",
     "express-validator": "^2.21.0",
     "jade": "*",
+    "jsonwebtoken": "^7.1.9",
     "jwt-simple": "^0.5.0",
     "mongoose": "^4.6.6",
     "mongoose-query-paginate": "^1.0.3",
