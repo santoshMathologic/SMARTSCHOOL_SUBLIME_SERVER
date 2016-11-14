@@ -3,6 +3,9 @@ var router = express.Router();
 var jwt = require('jwt-simple');
 var userModel = require('../../models/user.js');
 var tokenkey= require('../../configSecret/config');
+var fs = require('fs');
+
+var jwt_jsonwebtoken = require('jsonwebtoken');
 
 var q = require('q');
 
@@ -38,9 +41,11 @@ var authentication = {
               // If authentication is success, we will generate a token
               // and dispatch it to the client
 
-               var token = genToken(response);
-                res.cookie('x-access-token', token.token, { expires: new Date(token.expires) });
-                res.cookie('x-key', token.user.username);
+               //var token = genToken(response);
+               var token  = json_basedWebtoken(username);
+              res.cookie('x-access-token', token.token, { expires: new Date(token.expires) });
+              res.cookie('x-key', token.username);
+                
                 res.json(token);
 
             //  res.json("Login successfully : "+response.username +":"+ response.roleCode);
@@ -102,5 +107,37 @@ function expiresIn(numDays) {
     var dateObj = new Date();
     return dateObj.setDate(dateObj.getDate() + numDays);
 }
+
+
+// generate token using json web based  
+
+/*
+ function json_basedWebtoken (username){
+     var expires = expiresIn(7); // 7 days
+     var jsonweb_token = jwt_jsonwebtoken.sign(username,tokenkey.getkey(), {
+          expiresInMinutes: expires 
+        });
+        return {
+        token: jsonweb_token,
+        expires: expires,
+        user: user.username
+    };
+      
+ }
+*/
+
+function json_basedWebtoken (username){
+     var expires = expiresIn(7); // 7 days
+     //var cert = fs.readFileSync('../../configSecret/private.key');
+     var token = jwt_jsonwebtoken.sign({user:username, iat: Math.floor(Date.now() / 1000) - 30 },tokenkey.getkey(),{ algorithm: 'RS256'});
+      return {
+        token: token,
+        expires: expires,
+        user: username
+    };
+      
+}
+
+
 
 module.exports = authentication;
