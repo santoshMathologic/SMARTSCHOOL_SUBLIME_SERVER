@@ -29,7 +29,8 @@ var authentication = {
         }
         // Fire a query to your DB and check if the credentials are valid
         authentication.validate(username, password).then(function(response) {
-           if (response.roleCode === undefined) { // If authentication fails, we send a 401 back
+            var roleCode  = response.roleCode; 
+           if (roleCode === undefined) { // If authentication fails, we send a 401 back
                 res.status(403); // Throw generic error Message
                 res.json({
                         "result":false,
@@ -42,9 +43,10 @@ var authentication = {
               // and dispatch it to the client
 
                //var token = genToken(response);
-               var token  = json_basedWebtoken(username);
+               var token  = json_basedWebtoken(username,response.roleCode);
               res.cookie('x-access-token', token.token, { expires: new Date(token.expires) });
               res.cookie('x-key', token.username);
+              res.cookie('x-key', token.roleCode);
                 
                 res.json(token);
 
@@ -126,14 +128,15 @@ function expiresIn(numDays) {
  }
 */
 
-function json_basedWebtoken (username){
+function json_basedWebtoken (username,roleCode){
      var expires = expiresIn(7); // 7 days
      //var cert = fs.readFileSync('../../configSecret/private.key');
-     var token = jwt_jsonwebtoken.sign({user:username, iat: Math.floor(Date.now() / 1000) - 30 },tokenkey.getkey(),{ algorithm: 'RS256'});
+     var token = jwt_jsonwebtoken.sign({user:username, iat: Math.floor(Date.now() / 1000) - 30 },tokenkey.getkey());
       return {
         token: token,
         expires: expires,
-        user: username
+        user: username,
+        roleCode:roleCode
     };
       
 }
